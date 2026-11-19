@@ -1,10 +1,11 @@
 import { Elysia } from "elysia";
+import { v2 } from "cloudinary";
 import cors from "@elysiajs/cors";
 import { authServiceApi } from "./auth/auth.service";
 import { setupErrorHandler } from "./error/error.service";
 import userRouters from "./users/user.router";
-import { v2 } from "cloudinary";
 import drugRouters from "./drugs/drug.router";
+import cartRouters from "./carts/cart.router";
 import transactionRouters from "./transactions/transaction.router";
 
 const port = import.meta.env.PORT || 3000;
@@ -21,6 +22,7 @@ const app = new Elysia()
     credentials: true,
     origin: ["http://localhost:5173", "http://localhost:3000"]
 }))
+.use(cartRouters)
 .use(drugRouters)
 .use(transactionRouters)
 .use(userRouters)

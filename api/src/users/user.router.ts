@@ -45,12 +45,11 @@ const userRouters = new Elysia({ prefix: "/api/v1/users" })
     body: userSchema.addRaw,
     role: ["admin"]
 })
-.put("/:_id", async ({ body, params }) => {
-    return await new UserController().changeOneUser({ _id: params._id, ...body });
+.put("/", async ({ body }) => {
+    return await new UserController().changeOneUser(body);
 }, {
     auth: true,
-    body: t.Omit(userSchema.changeRaw, ["_id"]),
-    params: userSchema.params,
+    body: userSchema.changeRaw,
     role: ["admin"]
 });
 

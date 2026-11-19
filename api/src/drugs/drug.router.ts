@@ -22,8 +22,7 @@ const drugRouters = new Elysia({ prefix: "/api/v1/drugs" })
     return await new DrugController().showAllDrugs(query);
 }, {
     auth: true,
-    query: drugSchema.pagination,
-    role: ["admin", "pharmacist"]
+    query: drugSchema.pagination
 })
 .get("/:_id", async ({ params }) => {
     return await new DrugController().showDrugDetail(params._id);
@@ -31,6 +30,13 @@ const drugRouters = new Elysia({ prefix: "/api/v1/drugs" })
     auth: true,
     role: ["admin", "pharmacist"],
     params: drugSchema.params
+})
+.put("/", async ({ body }) => {
+    return await new DrugController().changeOneDrug(body);
+}, {
+    auth: true,
+    body: drugSchema.changeRaw,
+    role: ["admin", "pharmacist"]
 });
 
 export default drugRouters;
