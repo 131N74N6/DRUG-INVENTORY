@@ -7,6 +7,7 @@ import { db } from "../mongodb/mongodb.service";
 const statement = {
     user: ["create", "read", "update", "delete"],
     transaction: ["create", "read", "update", "delete"],
+    cart: ["create", "read", "update", "delete"],
     drug: ["create", "read", "update", "delete"]
 } as const;
 
@@ -14,23 +15,38 @@ const ac = createAccessControl(statement);
 
 const adminRole = ac.newRole({
     user: ["create", "read", "update", "delete"],
-    transaction: ["create", "read", "update", "delete"],
+    transaction: ["read", "delete"],
     drug: ["create", "read", "update", "delete"]
 });
 
 const pharmacistRole = ac.newRole({
     drug: ["create", "read", "update", "delete"],
-    transaction: ["create", "read", "update"]
+    transaction: ["read"]
 });
 
 const cashierRole = ac.newRole({
-    transaction: ["create", "read"]
+    drug: ["read"],
+    cart: ["create", "read", "update", "delete"],
+    transaction: ["read", "delete"]
 });
 
 export const authServiceApi = betterAuth({
     database: mongodbAdapter(db()),
     secret: import.meta.env.BETTER_AUTH_SECRET,
     baseURL: import.meta.env.BETTER_AUTH_URL,
+
+    databaseHooks: {
+        session: {
+            delete: {
+                after: async (session) => {
+                    if (session?.id) {
+                        const database = db();
+                        await database.collection("session").deleteOne({ id: session.id });
+                    }
+                }
+            }
+        }
+    },
 
     emailAndPassword: {
         enabled: true,

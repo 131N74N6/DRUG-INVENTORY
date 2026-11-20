@@ -28,8 +28,14 @@ const drugRouters = new Elysia({ prefix: "/api/v1/drugs" })
     return await new DrugController().showDrugDetail(params._id);
 }, {
     auth: true,
-    role: ["admin", "pharmacist"],
     params: drugSchema.params
+})
+.post("/", async ({ body }) => {
+    return await new DrugController().addOneDrug(body);
+}, {
+    auth: true,
+    body: drugSchema.addRaw,
+    role: ["admin", "pharmacist"]
 })
 .put("/", async ({ body }) => {
     return await new DrugController().changeOneDrug(body);
