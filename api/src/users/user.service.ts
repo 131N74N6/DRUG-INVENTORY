@@ -157,15 +157,32 @@ class UserService {
     }
 
     async deleteAllUsers() {
-        const usersTotal = await new UserRepository().showAllUsersTotal();
-        if (usersTotal === 0) throw new DrugStoreApiError(404, "users not found");
+        const users = await new UserRepository().showExistingUsers();
 
-        return await new UserRepository().deleteAllUsers();
+        if (users.length === 0) return;
+
+        const userImages = users.map((user) => {
+            v2.uploader.destroy(user.image_public_id, {
+                resource_type: user.image_resource_type
+            });
+        });
+
+        await Promise.all([ ...userImages, new UserRepository().deleteAllUsers() ]);
     }
 
     async deleteOneUser(id: string) {
         const userId = this.checkIdIsValid("user", id);
-        return await new UserRepository().deleteOneUser(userId);
+        const userData = await new UserRepository().showUserById(userId);
+
+        if (!userData) return;
+
+        if (userData.image_public_id !== "unknown" && userData.image_resource_type !== "unknown") {
+            await v2.uploader.destroy(userData.image_public_id, { 
+                resource_type: userData.image_resource_type 
+            });
+        }
+
+        await new UserRepository().deleteOneUser(userId);
     }
 
     async showAllUsers(props: TUser["pagination"]) {

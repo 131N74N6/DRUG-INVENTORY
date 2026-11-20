@@ -64,6 +64,10 @@ class UserRepository {
         .toArray();
     }
 
+    async showExistingUsers() {
+        return await this.users.find({ role: { $ne: "admin" } }).toArray();
+    }
+
     async showAllUsersTotal() {
         const users = await this.users.find({ role: { $ne: "admin" } }).toArray();
         return users.length;

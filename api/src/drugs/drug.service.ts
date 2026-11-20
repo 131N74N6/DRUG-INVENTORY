@@ -131,8 +131,10 @@ class DrugService {
         
         if (drugs.length === 0) return;
 
-        const result = drugs.map(drug => {
-            return v2.uploader.destroy(drug.image_public_id, { resource_type: drug.image_resource_type });
+        const result = drugs.map((drug) => {
+            return v2.uploader.destroy(drug.image_public_id, { 
+                resource_type: drug.image_resource_type 
+            });
         });
 
         await Promise.all([
