@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
 import { userSchema } from "./user.model";
 import UserController from "./user.controller";
-import { authMiddleware } from "../auth/auth.middleware";
+import { authMiddleware } from "../auths/auth.middleware";
 import { DrugStoreApiError } from "../error/error.service";
 
 const userRouters = new Elysia({ prefix: "/api/v1/users" })

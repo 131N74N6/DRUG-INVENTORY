@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { v2 } from "cloudinary";
 import cors from "@elysiajs/cors";
-import { authServiceApi } from "./auth/auth.service";
+import { authServiceApi } from "./auths/auth.service";
 import { setupErrorHandler } from "./error/error.service";
 import userRouters from "./users/user.router";
 import drugRouters from "./drugs/drug.router";

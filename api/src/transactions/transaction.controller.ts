@@ -2,11 +2,6 @@ import { TTransaction } from "./transaction.model";
 import TransactionService from "./transaction.service";
 
 class TransactionController {
-    async addToCart(props: TTransaction["addResult"]) {
-        await new TransactionService().addToCart(props);
-        return { message: "Successfully added drug to cart" }
-    }
-
     async deleteAllTransactions() {
         await new TransactionService().deleteAllTransactions();
         return { message: "Successfully deleted all drugs from cart" }
@@ -18,8 +13,13 @@ class TransactionController {
     }
 
     async showAllTransactions(props: TTransaction["pagination"]) {
-        const carts = await new TransactionService().showAllTransactions(props);
-        return { data: carts }
+        const transactions = await new TransactionService().showAllTransactions(props);
+        return { data: transactions }
+    }
+
+    async showTransactionDetail(id: string) {
+        const transaction = await new TransactionService().showTransactionDetail(id);
+        return { data: transaction }
     }
 }
 

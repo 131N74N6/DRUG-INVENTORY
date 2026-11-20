@@ -4,6 +4,7 @@ import { TCart } from "./cart.model";
 
 class CartRepository {
     private carts = db().collection("carts");
+    private transactions = db().collection("transactions");
 
     async addToCart(props: TCart["addResult"]) {
         await this.carts.insertOne({
@@ -17,6 +18,16 @@ class CartRepository {
             price: props.price,
             stock: props.stock,
             updated_at: new Date()
+        });
+    }
+
+    async addToTransaction() {
+        const drugs = await this.carts.find().toArray();
+        if (drugs.length === 0) return;
+        
+        await this.transactions.insertOne({
+            created_at: new Date(),
+            drugs: drugs
         });
     }
 

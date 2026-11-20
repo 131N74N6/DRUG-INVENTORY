@@ -7,6 +7,10 @@ class CartController {
         return { message: "Successfully added drug to cart" }
     }
 
+    async addToTransaction() {
+        return { message: "Successfully added all drugs in cart to transaction" }
+    }
+
     async changeOneDrugInCart(props: TCart["changeResult"]) {
         await new CartService().changeOneDrugInCart(props);
         return { message: "Successfully changed drug in cart" }

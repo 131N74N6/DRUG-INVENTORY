@@ -1,6 +1,6 @@
 import Elysia from "elysia";
 import CartController from "./cart.controller";
-import { authMiddleware } from "../auth/auth.middleware";
+import { authMiddleware } from "../auths/auth.middleware";
 import { cartSchema } from "./cart.model";
 
 const cartRouters = new Elysia({ prefix: "/api/v1/carts" })
@@ -23,6 +23,19 @@ const cartRouters = new Elysia({ prefix: "/api/v1/carts" })
 }, {
     auth: true,
     query: cartSchema.pagination,
+    role: ["cashier"]
+})
+.post("/transaction", async () => {
+    return await new CartController().addToTransaction();
+}, {
+    auth: true,
+    role: ["cashier"]
+})
+.post("/", async ({ body }) => {
+    return await new CartController().addToCart(body);
+}, {
+    auth: true,
+    body: cartSchema.addResult,
     role: ["cashier"]
 })
 .put("/", async ({ body }) => {

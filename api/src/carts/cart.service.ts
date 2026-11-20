@@ -8,6 +8,13 @@ class CartService {
         await new CartRepository().addToCart(props);
     }
 
+    async addToTransaction() {
+        await Promise.all([
+            new CartRepository().addToTransaction(),
+            new CartRepository().deleteAllDrugsInCart()
+        ]);
+    }
+
     async changeOneDrugInCart(props: TCart["changeResult"]) {
         await new CartRepository().changeOneDrugInCart(props);
     }

@@ -1,7 +1,31 @@
 import { betterAuth } from "better-auth"
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { admin } from "better-auth/plugins";
+import { createAccessControl } from "better-auth/plugins/access";
 import { db } from "../mongodb/mongodb.service";
+
+const statement = {
+    user: ["create", "read", "update", "delete"],
+    transaction: ["create", "read", "update", "delete"],
+    drug: ["create", "read", "update", "delete"]
+} as const;
+
+const ac = createAccessControl(statement);
+
+const adminRole = ac.newRole({
+    user: ["create", "read", "update", "delete"],
+    transaction: ["create", "read", "update", "delete"],
+    drug: ["create", "read", "update", "delete"]
+});
+
+const pharmacistRole = ac.newRole({
+    drug: ["create", "read", "update", "delete"],
+    transaction: ["create", "read", "update"]
+});
+
+const cashierRole = ac.newRole({
+    transaction: ["create", "read"]
+});
 
 export const authServiceApi = betterAuth({
     database: mongodbAdapter(db()),
@@ -25,12 +49,20 @@ export const authServiceApi = betterAuth({
 
     plugins: [
         admin({
-            defaultRole: "cashier",           // Default role for new user
-            adminRoles: ["admin", "pharmacist"] // Roles yang punya akses admin
+            ac,
+            adminRoles: ["admin", "pharmacist"],
+            defaultRole: "cashier",
+            roles: {
+                admin: adminRole,
+                pharmacist: pharmacistRole,
+                cashier: cashierRole
+            }
         })
     ],
 
     user: {
+        roles: ["admin", "pharmacist", "cashier"], 
+        defaultRole: "cashier",
         additionalFields: {
             address: { type: "string", required: true },
             gender: { type: "string", required: true },

@@ -1,5 +1,5 @@
 import Elysia from "elysia";
-import { authMiddleware } from "../auth/auth.middleware";
+import { authMiddleware } from "../auths/auth.middleware";
 import DrugController from "./drug.controller";
 import { drugSchema } from "./drug.model";
 

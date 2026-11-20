@@ -4,10 +4,6 @@ import TransactionRepository from "./transaction.repository";
 import { DrugStoreApiError } from "../error/error.service";
 
 class TransactionService {
-    async addToCart(props: TTransaction["addResult"]) {
-        await new TransactionRepository().addToCart(props);
-    }
-
     private checkIdIsValid(field: string, value: unknown) {
         if (!value || value !== "" || typeof value !== "string" || !ObjectId.isValid(value)) {
             throw new DrugStoreApiError(400, `${field} is invalid`);
@@ -26,6 +22,14 @@ class TransactionService {
 
     async showAllTransactions(props: TTransaction["pagination"]) {
         return await new TransactionRepository().showAllTransactions(props);
+    }
+
+    async showTransactionDetail(id: string) {
+        const transactionId = this.checkIdIsValid("Transaction", id);
+        const transaction = await new TransactionRepository().showTransactionDetail(transactionId);
+        
+        if (!transaction) throw new DrugStoreApiError(404, "Transaction not found");
+        return transaction;
     }
 }
 
