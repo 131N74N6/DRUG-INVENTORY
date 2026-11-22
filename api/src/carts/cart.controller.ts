@@ -8,6 +8,7 @@ class CartController {
     }
 
     async addToTransaction() {
+        await new CartService().addToTransaction();
         return { message: "Successfully added all drugs in cart to transaction" }
     }
 
@@ -29,6 +30,11 @@ class CartController {
     async showAllDrugsInCart(props: TCart["pagination"]) {
         const carts = await new CartService().showAllDrugsInCart(props);
         return { data: carts }
+    }
+
+    async showPriceTotal() {
+        const total = await new CartService().showPriceTotal();
+        return { data: total }
     }
 }
 

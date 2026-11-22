@@ -9,13 +9,18 @@ export const cartSchema = {
         image_resource_type:  t.String({ error: "failed to get file" }),
         name: t.String({ error: "Invalid drug name" }),
         price: t.Number({ error: "Invalid drug price" }),
-        stock: t.Number({ error: "Invalid drug price" })
+        quantity: t.Number({ error: "Invalid drug quantity" }),
+        drug_id: t.String({ error: "Invalid drug data" })
     }),
 
     changeResult: t.Object({
         _id: t.String({ error: "Invalid drug data" }),
-        price: t.Number({ error: "Invalid drug price" }),
-        stock: t.Number({ error: "Invalid drug price" })
+        quantity: t.Number({ error: "Invalid drug quantity" })
+    }),
+
+    changeStock: t.Object({
+        drug_id: t.String({ error: "Invalid drug data" }),
+        quantity: t.Number({ error: "Invalid drug quantity" })
     }),
 
     pagination: t.Object({

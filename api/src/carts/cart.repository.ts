@@ -1,9 +1,10 @@
-import { ObjectId } from "mongodb";
+import { ClientSession, ObjectId } from "mongodb";
 import { db } from "../mongodb/mongodb.service";
 import { TCart } from "./cart.model";
 
 class CartRepository {
     private carts = db().collection("carts");
+    private drugs = db().collection("drugs");
     private transactions = db().collection("transactions");
 
     async addToCart(props: TCart["addResult"]) {
@@ -16,36 +17,58 @@ class CartRepository {
             image_resource_type: props.image_resource_type.trim(),
             name: props.name.trim(),
             price: props.price,
-            stock: props.stock,
-            updated_at: new Date()
+            quantity: props.quantity,
+            updated_at: new Date(),
+            drug_id: new ObjectId(props.drug_id)
         });
     }
 
-    async addToTransaction() {
-        const drugs = await this.carts.find().toArray();
-        if (drugs.length === 0) return;
-        
+    async addToTransaction(collectedDrugs: any[], session?: ClientSession) {
         await this.transactions.insertOne({
             created_at: new Date(),
-            drugs: drugs
+            drugs: collectedDrugs,
+            price_total: collectedDrugs.reduce((sum, drug) => {
+                return sum + (drug.price * drug.quantity);
+            }, 0)
         });
+    }
+
+    async changeDrugsStock(props: TCart["changeStock"][], session?: ClientSession) {
+        if (props.length === 0) return;
+
+        const bulkOperations = props.map((drug) => {
+            return {
+                updateOne: {
+                    filter: { _id: new ObjectId(drug.drug_id), stock: { $gte: drug.quantity } }, 
+                    update: { 
+                        $inc: { stock: -drug.quantity }, 
+                        $set: { updated_at: new Date() } 
+                    }
+                }
+            }
+        });
+
+        const result = await this.drugs.bulkWrite(bulkOperations, { session });
+
+        if (result.modifiedCount !== props.length) throw new Error("INSUFFICIENT_STOCK");
     }
 
     async changeOneDrugInCart(props: TCart["changeResult"]) {
         await this.carts.updateOne({ _id: new ObjectId(props._id) }, {
-            $set: {
-                price: props.price,
-                stock: props.stock
-            }
+            $set: { quantity: props.quantity, updated_at: new Date() }
         });
     }
 
-    async deleteAllDrugsInCart() {
-        await this.carts.deleteMany();
+    async deleteAllDrugsInCart(session?: ClientSession) {
+        await this.carts.deleteMany({}, { session });
     }
 
     async deleteOneDrugFromCart(id: string) {
         await this.carts.deleteOne({ _id: new ObjectId(id) });
+    }
+
+    async findAllDrugsInCart(session?: ClientSession) {
+        return await this.carts.find({}, { session }).toArray();
     }
 
     async showAllDrugsInCart(props: TCart["pagination"]) {
@@ -57,6 +80,12 @@ class CartRepository {
         .limit(limit)
         .skip(skip)
         .toArray();
+    }
+
+    async showPriceTotal() {
+        const drugs = await this.carts.find({}).toArray();
+        const total = drugs.reduce((sum, drug) => sum + (drug.price * drug.quantity), 0);
+        return total;
     }
 }
 

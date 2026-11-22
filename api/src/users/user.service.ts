@@ -6,20 +6,6 @@ import uploadToCloudinary from "../cloudinary/cloudinary.service";
 import { v2 } from "cloudinary";
 
 class UserService {
-    private checkIdIsValid(field: string, value: unknown) {
-        if (!value || value === "" || typeof value !== "string") {
-            throw new DrugStoreApiError(400, `invalid ${field}`);
-        }
-        return value;
-    }
-
-    private checkIsInputAString(field: string, value: unknown) {
-        if (!value || value === "" || typeof value !== "string" || !ObjectId.isValid(value)) {
-            throw new DrugStoreApiError(400, `invalid ${field}`);
-        }
-        return value;
-    }
-
     async addOneUser(props: TUser["addRaw"]) {
         const address = this.checkIsInputAString("address", props.address);
         const email = this.checkIsInputAString("email", props.email);
@@ -154,6 +140,20 @@ class UserService {
                 phone: phone
             });
         }
+    }
+    
+    private checkIdIsValid(field: string, value: unknown) {
+        if (!value || value === "" || typeof value !== "string") {
+            throw new DrugStoreApiError(400, `invalid ${field}`);
+        }
+        return value;
+    }
+
+    private checkIsInputAString(field: string, value: unknown) {
+        if (!value || value === "" || typeof value !== "string" || !ObjectId.isValid(value)) {
+            throw new DrugStoreApiError(400, `invalid ${field}`);
+        }
+        return value;
     }
 
     async deleteAllUsers() {

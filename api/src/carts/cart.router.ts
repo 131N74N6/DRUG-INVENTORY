@@ -18,6 +18,12 @@ const cartRouters = new Elysia({ prefix: "/api/v1/carts" })
     params: cartSchema.params,
     role: ["cashier"]
 })
+.get("/price-total", async () => {
+    return await new CartController().showPriceTotal();
+}, {
+    auth: true,
+    role: ["cashier"]
+})
 .get("/", async ({ query }) => {
     return await new CartController().showAllDrugsInCart(query);
 }, {

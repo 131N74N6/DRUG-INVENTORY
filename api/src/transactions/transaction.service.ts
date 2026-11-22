@@ -5,7 +5,7 @@ import { DrugStoreApiError } from "../error/error.service";
 
 class TransactionService {
     private checkIdIsValid(field: string, value: unknown) {
-        if (!value || value !== "" || typeof value !== "string" || !ObjectId.isValid(value)) {
+        if (!value || value === "" || typeof value !== "string" || !ObjectId.isValid(value)) {
             throw new DrugStoreApiError(400, `${field} is invalid`);
         }
         return value;

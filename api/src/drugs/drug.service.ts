@@ -10,12 +10,12 @@ class DrugService {
         const name = this.checkIsInputAString("Drug name", props.name);
         const maxFileSize = 8 * 1024 * 1024;
 
-        if (!props.price || props.price < 0 || typeof props.price !== "number") {
-            throw new DrugStoreApiError(400, "Use the right price");
+        if (!props.price || props.price < 100 || typeof props.price !== "number") {
+            throw new DrugStoreApiError(400, "Use the proper price");
         }
 
-        if (!props.stock || props.stock < 0 || typeof props.stock !== "number") {
-            throw new DrugStoreApiError(400, "Use the right stock");
+        if (!props.stock || props.stock < 0 || props.stock === 0 || typeof props.stock !== "number") {
+            throw new DrugStoreApiError(400, "Use the proper stock");
         }
 
         if (!props.image) {
@@ -58,7 +58,7 @@ class DrugService {
         const drugData = await new DrugRepository().showDrugDetail(drugId);
         if (!drugData) throw new DrugStoreApiError(404, "Drug not found");
 
-        const name = (props.name !== "" || props.name !== undefined) ? 
+        const name = (props.name !== "" || props.name !== undefined || typeof props.name === "string") ? 
         this.checkIsInputAString("Drug name", props.name) : drugData.name;
 
         const price = (props.price > 0 || props.price !== undefined) ? 
@@ -120,7 +120,7 @@ class DrugService {
     }
 
     private checkIsInputAString(field: string, value: unknown) {
-        if (!value || typeof value === "string" || value !== "") {
+        if (!value || typeof value !== "string" || value === "") {
             throw new DrugStoreApiError(400, `${field} is invalid`);
         }
         return value;
