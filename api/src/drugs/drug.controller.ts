@@ -1,36 +1,38 @@
 import { TDrug } from "./drug.model";
-import DrugService from "./drug.service";
+import drugService from "./drug.service";
 
 class DrugController {
     async addOneDrug(props: TDrug["addRaw"]) {
-        await new DrugService().addOneDrug(props);
+        await drugService.addOneDrug(props);
         return { message: "Successfully added one drug" }
     }
 
     async changeOneDrug(props: TDrug["changeRaw"]) {
-        await new DrugService().changeOneDrug(props);
+        await drugService.changeOneDrug(props);
         return { message: "Successfully changed one drug" }
     }
 
     async deleteAllDrugs() {
-        await new DrugService().deleteAllDrugs();
+        await drugService.deleteAllDrugs();
         return { message: "Successfully deleted all drugs" }
     }
 
     async deleteOneDrug(id: string) {
-        await new DrugService().deleteOneDrug(id);
+        await drugService.deleteOneDrug(id);
         return { message: "Successfully deleted one drug" }
     }
 
     async showAllDrugs(props: TDrug["pagination"]) {
-        const drugs = await new DrugService().showAllDrugs(props);
+        const drugs = await drugService.showAllDrugs(props);
         return { data: drugs }
     }
 
     async showDrugDetail(id: string) {
-        const drug = await new DrugService().showDrugDetail(id);
+        const drug = await drugService.showDrugDetail(id);
         return { data: drug }
     }
 }
 
-export default DrugController;
+const drugController = new DrugController();
+
+export default drugController;

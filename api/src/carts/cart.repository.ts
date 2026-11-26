@@ -1,11 +1,13 @@
 import { ClientSession, ObjectId } from "mongodb";
 import { db } from "../mongodb/mongodb.service";
 import { TCart } from "./cart.model";
+import { TDrug } from "../drugs/drug.model";
+import { TTransaction } from "../transactions/transaction.model";
 
 class CartRepository {
-    private carts = db().collection("carts");
-    private drugs = db().collection("drugs");
-    private transactions = db().collection("transactions");
+    private carts = db().collection<TCart["data"]>("carts");
+    private drugs = db().collection<TDrug["data"]>("drugs");
+    private transactions = db().collection<TTransaction["data"]>("transactions");
 
     async addToCart(props: TCart["addResult"]) {
         await this.carts.insertOne({
@@ -23,13 +25,11 @@ class CartRepository {
         });
     }
 
-    async addToTransaction(collectedDrugs: any[], session?: ClientSession) {
+    async addToTransaction(collectedDrugs: TCart["drugs"][], session?: ClientSession) {
         await this.transactions.insertOne({
             created_at: new Date(),
             drugs: collectedDrugs,
-            price_total: collectedDrugs.reduce((sum, drug) => {
-                return sum + (drug.price * drug.quantity);
-            }, 0)
+            price_total: collectedDrugs.reduce((sum, drug) => sum + (drug.price * drug.quantity), 0)
         });
     }
 
@@ -89,4 +89,6 @@ class CartRepository {
     }
 }
 
-export default CartRepository;
+const cartRepository = new CartRepository();
+
+export default cartRepository;

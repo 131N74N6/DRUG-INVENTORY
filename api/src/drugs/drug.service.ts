@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { DrugStoreApiError } from "../error/error.service";
 import { TDrug } from "./drug.model";
-import DrugRepository from "./drug.repository";
+import drugRepository from "./drug.repository";
 import uploadToCloudinary from "../cloudinary/cloudinary.service";
 import { v2 } from "cloudinary";
 
@@ -10,7 +10,7 @@ class DrugService {
         const name = this.checkIsInputAString("Drug name", props.name);
         const maxFileSize = 8 * 1024 * 1024;
 
-        if (!props.price || props.price < 100 || typeof props.price !== "number") {
+        if (!props.price || props.price < 1000 || typeof props.price !== "number") {
             throw new DrugStoreApiError(400, "Use the proper price");
         }
 
@@ -40,7 +40,7 @@ class DrugService {
             original_name: props.image.name
         });
 
-        await new DrugRepository().addOneDrug({
+        await drugRepository.addOneDrug({
             image: result.url,
             image_filename: result.filename,
             image_filetype: result.filetype,
@@ -55,17 +55,22 @@ class DrugService {
     async changeOneDrug(props: TDrug["changeRaw"]) {
         const maxFileSize = 8 * 1024 * 1024;
         const drugId = this.checkIsIdValid("Drug", props._id);
-        const drugData = await new DrugRepository().showDrugDetail(drugId);
+        const drugData = await drugRepository.showDrugDetail(drugId);
         if (!drugData) throw new DrugStoreApiError(404, "Drug not found");
 
-        const name = (props.name !== "" || props.name !== undefined || typeof props.name === "string") ? 
+        const name = (props.name !== undefined || props.name !== "") ? 
         this.checkIsInputAString("Drug name", props.name) : drugData.name;
 
-        const price = (props.price > 0 || props.price !== undefined) ? 
-        this.checkIsInputAString("Drug price", props.price) : drugData.price;
+        if (props.price < 1000) {
+            throw new DrugStoreApiError(400, "Use the proper price");
+        }
 
-        const stock = (props.stock > 0 || props.stock !== undefined) ? 
-        this.checkIsInputAString("Drug stock", props.stock) : drugData.stock;
+        if (props.stock < 0) {
+            throw new DrugStoreApiError(400, "Use the proper stock");
+        }
+
+        const price = (props.price >= 1000 || props.price !== undefined) ? props.price : drugData.price;
+        const stock = (props.stock >= 0 || props.stock !== undefined) ? props.stock : drugData.stock;
 
         if (props.image) {
             if (!props.image.type.includes("image")) {
@@ -86,7 +91,7 @@ class DrugService {
                 original_name: props.image.name
             });
 
-            await new DrugRepository().changeOneDrug({
+            await drugRepository.changeOneDrug({
                 _id: drugId,
                 image: result.url,
                 image_filename: result.filename,
@@ -98,7 +103,7 @@ class DrugService {
                 stock: stock
             });
         } else {
-            await new DrugRepository().changeOneDrug({
+            await drugRepository.changeOneDrug({
                 _id: drugId,
                 image: drugData.image,
                 image_filename: drugData.image_filename,
@@ -127,7 +132,7 @@ class DrugService {
     }
 
     async deleteAllDrugs() {
-        const drugs = await new DrugRepository().findAllDrugs();
+        const drugs = await drugRepository.findAllDrugs();
         
         if (drugs.length === 0) return;
 
@@ -138,31 +143,34 @@ class DrugService {
         });
 
         await Promise.all([
-            ...result, new DrugRepository().deleteAllDrugs()
+            ...result, drugRepository.deleteAllDrugs()
         ]);
     }
 
     async deleteOneDrug(id: string) {
         const drugId = this.checkIsIdValid("Drug", id);
-        const drug = await new DrugRepository().showDrugDetail(drugId);
+        const drug = await drugRepository.showDrugDetail(drugId);
         if (!drug) return;
 
         await Promise.all([
             v2.uploader.destroy(drug.image_public_id, { resource_type: drug.image_resource_type }),
-            new DrugRepository().deleteOneDrug(drugId)
+            drugRepository.deleteOneDrug(drugId)
         ]);
     }
 
     async showAllDrugs(props: TDrug["pagination"]) {
-        return await new DrugRepository().showAllDrugs(props);
+        return await drugRepository.showAllDrugs(props);
     }
 
     async showDrugDetail(id: string) {
         const drugId = this.checkIsIdValid("Drug", id);
-        const drug = await new DrugRepository().showDrugDetail(drugId);
+        const drug = await drugRepository.showDrugDetail(drugId);
+
         if (!drug) throw new DrugStoreApiError(404, "Drug not found");
         return drug;
     }
 }
 
-export default DrugService;
+const drugService = new DrugService();
+
+export default drugService;

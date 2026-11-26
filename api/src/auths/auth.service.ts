@@ -49,6 +49,7 @@ export const authServiceApi = betterAuth({
     },
 
     emailAndPassword: {
+        autoSignIn: false,
         enabled: true,
         minPasswordLength: 8,
         maxPasswordLength: 128

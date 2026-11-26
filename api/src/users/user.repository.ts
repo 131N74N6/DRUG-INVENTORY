@@ -1,30 +1,10 @@
 import { ObjectId } from "mongodb";
 import { db } from "../mongodb/mongodb.service";
 import { TUser } from "./user.model";
+import { User } from "../auths/auth.model";
 
 class UserRepository {
-    private users = db().collection("user");
-
-    async addOneUser(props: TUser["addResult"]) {
-        const hashedPassword = await Bun.password.hash(props.password, {
-            algorithm: "bcrypt", cost: 10
-        });
-
-        await this.users.insertOne({
-            address: props.address.trim(),
-            email: props.email.trim(),
-            gender: props.gender.trim(),
-            image: props.image.trim(),
-            image_filename: props.image_filename.trim(),
-            image_filetype: props.image_filetype.trim(),
-            image_public_id: props.image_public_id.trim(),
-            image_resource_type: props.image_resource_type.trim(),
-            password: hashedPassword,
-            phone: props.phone.trim(),
-            name: props.name.trim(),
-            role: props.role.trim()
-        });
-    }
+    private users = db().collection<Omit<User, "id">>("user");
 
     async changeOneUser(props: TUser["changeResult"]) {
         await this.users.updateOne({ _id: new ObjectId(props._id) }, {
@@ -79,4 +59,6 @@ class UserRepository {
     }
 }
 
-export default UserRepository;
+const userRepository = new UserRepository();
+
+export default userRepository;

@@ -3,7 +3,7 @@ import { db } from "../mongodb/mongodb.service";
 import { TTransaction } from "./transaction.model";
 
 class TransactionRepository {
-    private transactions = db().collection("transactions");
+    private transactions = db().collection<TTransaction["data"]>("transactions");
 
     async deleteAllTransactions() {
         await this.transactions.deleteMany();

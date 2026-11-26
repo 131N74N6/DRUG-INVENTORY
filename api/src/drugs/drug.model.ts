@@ -4,8 +4,8 @@ export const drugSchema = {
     addRaw: t.Object({
         image: t.File({ error: "Invalid image file", maxSize: 8 * 1024 * 1024, type: "image/*" }),
         name: t.String({ error: "Invalid drug name" }),
-        price: t.Number({ error: "Invalid drug price" }),
-        stock: t.Number({ error: "Invalid drug price" })
+        price: t.Number({ error: "Invalid drug price", minimum: 1000 }),
+        stock: t.Number({ error: "Invalid drug price", minimum: 1 })
     }),
 
     addResult: t.Object({
@@ -15,16 +15,16 @@ export const drugSchema = {
         image_public_id: t.String({ error: "Invalid file" }),
         image_resource_type:  t.String({ error: "failed to get file" }),
         name: t.String({ error: "Invalid drug name" }),
-        price: t.Number({ error: "Invalid drug price" }),
-        stock: t.Number({ error: "Invalid drug price" })
+        price: t.Number({ error: "Invalid drug price", minimum: 1000 }),
+        stock: t.Number({ error: "Invalid drug price", minimum: 1 })
     }),
 
     changeRaw: t.Object({
         _id: t.String({ error: "Invalid drug data" }),
         image: t.File({ error: "Invalid image file", maxSize: 8 * 1024 * 1024, type: "image/*" }),
         name: t.String({ error: "Invalid drug name" }),
-        price: t.Number({ error: "Invalid drug price" }),
-        stock: t.Number({ error: "Invalid drug price" })
+        price: t.Number({ error: "Invalid drug price", minimum: 1000 }),
+        stock: t.Number({ error: "Invalid drug price", minimum: 1 })
     }),
 
     changeResult: t.Object({
@@ -35,8 +35,21 @@ export const drugSchema = {
         image_public_id: t.String({ error: "Invalid file" }),
         image_resource_type:  t.String({ error: "failed to get file" }),
         name: t.String({ error: "Invalid drug name" }),
-        price: t.Number({ error: "Invalid drug price" }),
-        stock: t.Number({ error: "Invalid drug price" })
+        price: t.Number({ error: "Invalid drug price", minimum: 1000 }),
+        stock: t.Number({ error: "Invalid drug price", minimum: 1 })
+    }),
+
+    data: t.Object({
+        created_at: t.Date({ error: "Invalid datetime" }),
+        image: t.String({ error: "Unable to access file" }),
+        image_filename: t.String({ error: "Invalid file name" }),
+        image_filetype: t.String({ error: "Invalid file type" }),
+        image_public_id: t.String({ error: "Invalid file" }),
+        image_resource_type:  t.String({ error: "failed to get file" }),
+        name: t.String({ error: "Invalid drug name" }),
+        price: t.Number({ error: "Invalid drug price", minimum: 1000 }),
+        stock: t.Number({ error: "Invalid drug price", minimum: 1 }),
+        updated_at: t.Date({ error: "Invalid datetime" })
     }),
 
     pagination: t.Object({
