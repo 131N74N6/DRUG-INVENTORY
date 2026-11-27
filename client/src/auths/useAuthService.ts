@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createAuthClient } from "better-auth/client";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 import type { AuthServiceApi } from "../../../api/src/auths/auth.model";
@@ -39,7 +39,15 @@ export default function useAuthService() {
         }),
 
         signOut: useMutation({
-            mutationFn: async () => {}
+            mutationFn: async () => {
+                const request = await authClient.signOut();
+                if (request.error) throw new Error(request.error.message);
+                return request.data;
+            },
+            onSuccess: () => {
+                resetSignInState();
+                resetSignUpState();
+            }
         }),
 
         signUp: useMutation({
@@ -48,6 +56,9 @@ export default function useAuthService() {
                     email: signedUpEmail.trim(),
                     password: signedUpPassword.trim()
                 });
+
+                if (request.error) throw new Error(request.error.message);
+                return request.data.user;
             },
             onSuccess: async () => {
                 await queryClient.invalidateQueries({ queryKey: ["current-user"] });
@@ -55,6 +66,9 @@ export default function useAuthService() {
             }
         }),
         
-        showcurrentUser: useQuer
+        showcurrentUser: useQuery({
+            queryFn: async () => {},
+            queryKey: ["current-user"]
+        });
     }
 }
