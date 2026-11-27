@@ -18,8 +18,14 @@ const drugRouters = new Elysia({ prefix: "/api/v1/drugs" })
     role: ["admin", "pharmacist"],
     params: drugSchema.params
 })
+.get("/empty", async ({ query }) => {
+    return await drugController.showEmptyDrugs(query);
+}, {
+    auth: true,
+    query: drugSchema.pagination
+})
 .get("/", async ({ query }) => {
-    return await drugController.showAllDrugs(query);
+    return await drugController.showAvailableDrugs(query);
 }, {
     auth: true,
     query: drugSchema.pagination

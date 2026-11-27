@@ -158,8 +158,12 @@ class DrugService {
         ]);
     }
 
-    async showAllDrugs(props: TDrug["pagination"]) {
-        return await drugRepository.showAllDrugs(props);
+    async showAvailableDrugs(props: TDrug["pagination"]) {
+        return await drugRepository.showAvailableDrugs(props);
+    }
+
+    async showEmptyDrugs(props: TDrug["pagination"]) {
+        return await drugRepository.showEmptyDrugs(props);
     }
 
     async showDrugDetail(id: string) {

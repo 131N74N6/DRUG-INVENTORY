@@ -22,8 +22,13 @@ class DrugController {
         return { message: "Successfully deleted one drug" }
     }
 
-    async showAllDrugs(props: TDrug["pagination"]) {
-        const drugs = await drugService.showAllDrugs(props);
+    async showAvailableDrugs(props: TDrug["pagination"]) {
+        const drugs = await drugService.showAvailableDrugs(props);
+        return { data: drugs }
+    }
+
+    async showEmptyDrugs(props: TDrug["pagination"]) {
+        const drugs = await drugService.showEmptyDrugs(props);
         return { data: drugs }
     }
 
