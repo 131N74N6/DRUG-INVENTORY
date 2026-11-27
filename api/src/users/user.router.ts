@@ -42,8 +42,7 @@ const userRouters = new Elysia({ prefix: "/api/v1/users" })
     return await userController.changeOneUser(body);
 }, {
     auth: true,
-    body: userSchema.changeRaw,
-    role: ["admin"]
+    body: userSchema.changeRaw
 });
 
 export default userRouters;

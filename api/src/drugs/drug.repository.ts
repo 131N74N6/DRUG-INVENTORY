@@ -62,7 +62,7 @@ class DrugRepository {
                     stock: props.stock,
                     updated_at: new Date()
                 }
-            }),
+            })
         ]);
     }
 
@@ -89,7 +89,8 @@ class DrugRepository {
 
             return this.transactions.updateOne({ _id: transaction._id }, {
                 $pull: { drugs: { drug_id: new ObjectId(id) }},
-                $inc: { price_total: -substractedPrice }
+                $inc: { price_total: -substractedPrice },
+                $set: { updated_at: new Date() }
             });
         });
 
