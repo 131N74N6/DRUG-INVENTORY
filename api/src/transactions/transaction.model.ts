@@ -33,7 +33,7 @@ export const transactionSchema = {
     }),
 
     params: t.Object({
-        _id: t.String({ error: "Invalid transaction data" })
+        _id: t.String({ error: "Invalid transaction data", pattern: "^[0-9A-Fa-f]{24}$" })
     })
 }
 

@@ -75,10 +75,26 @@ class DrugRepository {
     }
 
     async deleteOneDrug(id: string) {
+        const affectedTransactions = await this.transactions.find({ "drugs.drug_id": new ObjectId(id) })
+        .toArray();
+
+        const changeTransactions = affectedTransactions.map((transaction) => {
+            let substractedPrice = 0;
+
+            for (const drug of transaction.drugs) {
+                if (drug.drug_id.toString() === id) {
+                    substractedPrice += drug.price * drug.quantity;
+                }
+            }
+
+            return this.transactions.updateOne({ _id: transaction._id }, {
+                $pull: { drugs: { drug_id: new ObjectId(id) }},
+                $inc: { price_total: -substractedPrice }
+            });
+        });
+
         await Promise.all([
-            this.transactions.updateMany({ "drugs.$[p].drug_id": new ObjectId(id) }, {
-                $pull: { "drugs.$[p].drug_id": new ObjectId(id) }
-            }, { arrayFilters: [{ "p.drug_id": new ObjectId(id) }] }),
+            ...changeTransactions,
             this.carts.deleteMany({ drug_id: new ObjectId(id) }),
             this.drugs.deleteOne({ _id: new ObjectId(id) })
         ]);

@@ -20,7 +20,7 @@ export const drugSchema = {
     }),
 
     changeRaw: t.Object({
-        _id: t.String({ error: "Invalid drug data" }),
+        _id: t.String({ error: "Invalid drug data", pattern: "^[0-9A-Fa-f]{24}$" }),
         image: t.File({ error: "Invalid image file", maxSize: 8 * 1024 * 1024, type: "image/*" }),
         name: t.String({ error: "Invalid drug name" }),
         price: t.Number({ error: "Invalid drug price", minimum: 1000 }),
@@ -28,7 +28,7 @@ export const drugSchema = {
     }),
 
     changeResult: t.Object({
-        _id: t.String({ error: "Invalid drug data" }),
+        _id: t.String({ error: "Invalid drug data", pattern: "^[0-9A-Fa-f]{24}$" }),
         image: t.String({ error: "Unable to access file" }),
         image_filename: t.String({ error: "Invalid file name" }),
         image_filetype: t.String({ error: "Invalid file type" }),
@@ -58,7 +58,7 @@ export const drugSchema = {
     }),
     
     params: t.Object({
-        _id: t.String({ error: "Invalid drug data" })
+        _id: t.String({ error: "Invalid drug data", pattern: "^[0-9A-Fa-f]{24}$" })
     })
 }
 

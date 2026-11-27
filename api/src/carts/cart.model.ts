@@ -68,7 +68,7 @@ export const cartSchema = {
     }),
 
     params: t.Object({
-        _id: t.String({ error: "Invalid drug data" })
+        _id: t.String({ error: "Invalid drug data", pattern: "^[0-9A-Fa-f]{24}$" })
     })
 }
 

@@ -28,7 +28,7 @@ export const userSchema = {
     }),
 
     changeRaw: t.Object({
-        _id: t.String({ error: "Invalid data" }),
+        _id: t.String({ error: "Invalid user data", pattern: "^[0-9A-Fa-f]{24}$" }),
         address: t.String({ error: "Invalid address", minLength: 5 }),
         gender: t.String({ error: "Invalid gender", minLength: 4 }),
         image: t.File({ error: "Invalid file name", maxSize: 6 * 1024 * 1024, type: "image/*" }),
@@ -38,7 +38,7 @@ export const userSchema = {
     }),
 
     changeResult: t.Object({
-        _id: t.String({ error: "Invalid user" }),
+        _id: t.String({ error: "Invalid user data", pattern: "^[0-9A-Fa-f]{24}$" }),
         address: t.String({ error: "Invalid address", minLength: 5 }),
         gender: t.String({ error: "Invalid gender", minLength: 4 }),
         image: t.String({ error: "Unable to access file" }),
@@ -57,7 +57,7 @@ export const userSchema = {
     }),
     
     params: t.Object({
-        _id: t.String({ error: "Invalid user" })
+        _id: t.String({ error: "Invalid user data", pattern: "^[0-9A-Fa-f]{24}$" })
     })
 }
 
